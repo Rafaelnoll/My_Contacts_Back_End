@@ -25,7 +25,7 @@ class CategoryController {
     }
 
     const categoryCreated = await CategoriesRepository.create({ name });
-    response.json(categoryCreated);
+    response.status(201).json(categoryCreated);
   }
 
   async delete(request, response) {
@@ -36,9 +36,9 @@ class CategoryController {
       return;
     }
 
-    const category = await CategoriesRepository.delete(id);
+    await CategoriesRepository.delete(id);
 
-    response.json(category);
+    response.sendStatus(204);
   }
 }
 

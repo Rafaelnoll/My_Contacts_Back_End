@@ -54,7 +54,7 @@ class ContactController {
     });
 
     if (userCreated) {
-      response.json(userCreated);
+      response.status(201).json(userCreated);
       return;
     }
 
@@ -113,8 +113,8 @@ class ContactController {
       return;
     }
 
-    const contacts = await ContactsRepository.delete(id);
-    response.json(contacts);
+    await ContactsRepository.delete(id);
+    response.sendStatus(204);
   }
 }
 
