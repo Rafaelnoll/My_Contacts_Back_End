@@ -1,3 +1,4 @@
+const isValidUUID = require('../../utils/isValidUUID');
 const ContactsRepository = require('../repositories/ContactsRepository');
 
 class ContactController {
@@ -12,7 +13,13 @@ class ContactController {
   async show(request, response) {
     const { id } = request.params;
 
+    if (!isValidUUID(id)) {
+      response.status(400).json({ error: 'Invalid contact id' });
+      return;
+    }
+
     const contact = await ContactsRepository.findOne(id);
+
     if (!contact) {
       response.status(404).json({ error: 'Contact not found!' });
       return;
@@ -39,6 +46,11 @@ class ContactController {
       return;
     }
 
+    if (categoryId && !isValidUUID(categoryId)) {
+      response.status(400).json({ error: 'Invalid category id' });
+      return;
+    }
+
     const userAlreadyCreated = await ContactsRepository.findByEmail(email);
 
     if (userAlreadyCreated) {
@@ -48,9 +60,9 @@ class ContactController {
 
     const userCreated = await ContactsRepository.create({
       name,
-      email,
+      email: email || null,
       phone,
-      categoryId,
+      categoryId: categoryId || null,
     });
 
     if (userCreated) {
@@ -71,6 +83,10 @@ class ContactController {
 
     const { id } = request.params;
 
+    if (!isValidUUID(id)) {
+      return response.status(400).json({ error: 'Invalid contact id' });
+    }
+
     if (!id) {
       return response.status(400).json({ error: 'Id is required' });
     }
@@ -89,6 +105,10 @@ class ContactController {
       return response.status(400).json({ error: 'email is required' });
     }
 
+    if (categoryId && !isValidUUID(categoryId)) {
+      return response.status(400).json({ error: 'Invalid category id' });
+    }
+
     const contactByEmail = await ContactsRepository.findByEmail(email);
 
     if (contactByEmail && contactByEmail.id !== id) {
@@ -97,9 +117,9 @@ class ContactController {
 
     const updatedContact = await ContactsRepository.update(id, {
       name,
-      email,
+      email: email || null,
       phone,
-      categoryId,
+      categoryId: categoryId || null,
     });
 
     return response.json(updatedContact);
@@ -110,6 +130,11 @@ class ContactController {
 
     if (!id) {
       response.status(400).json({ error: 'id is required' });
+      return;
+    }
+
+    if (!isValidUUID(id)) {
+      response.status(400).json({ error: 'Invalid contact id' });
       return;
     }
 
